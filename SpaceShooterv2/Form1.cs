@@ -31,6 +31,8 @@ namespace SpaceShooterv2
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
+            KeyDown += Form1_KeyDown;
+            KeyUp += Form1_KeyUp;
             var backgroundTimer = new System.Timers.Timer();
             backgroundTimer.Interval = 20;
             backgroundTimer.Elapsed += MoveBackground_Elapsed;
@@ -44,36 +46,38 @@ namespace SpaceShooterv2
             _protectileSpeed = 20;
             _protectiles = new PictureBox[3];
             _enemies = new PictureBox[10];
-            _enemySpeed = 20;
+            _enemySpeed = 2;
             _enemyProtectileSpeed = 4;
-            
-            
+
+
             // Image munition = Image.FromFile("asserts\\munition.png");
             for (int i = 0; i < _protectiles.Length; i++)
             {
                 _protectiles[i] = new PictureBox();
                 _protectiles[i].Size = new Size(8, 8);
-                //   protectiles[i].Image = munition;
-                _protectiles[i].BackColor = Color.Black;
+                _protectiles[i].Image =
+                    Image.FromFile(
+                        "C:\\Users\\kedzi\\RiderProjects\\SpaceShooterv2\\SpaceShooterv2\\asserts\\munition.png");
+
                 _protectiles[i].SizeMode = PictureBoxSizeMode.Zoom;
                 _protectiles[i].BorderStyle = BorderStyle.None;
-                this.Controls.Add(_protectiles[i]);
+                Controls.Add(_protectiles[i]);
             }
 
             for (int i = 0; i < _enemies.Length; i++)
             {
                 _enemies[i] = new PictureBox();
-              //  _enemies[i].Image = new Bitmap(50, 50);
-              _enemies[i].BackColor = Color.IndianRed;
-              
+                //  _enemies[i].Image = new Bitmap(50, 50);
+                _enemies[i].Image =
+                    Image.FromFile("C:\\Users\\kedzi\\RiderProjects\\SpaceShooterv2\\SpaceShooterv2\\asserts\\E1.png");
+
                 _enemies[i].Size = new Size(50, 50);
                 _enemies[i].SizeMode = PictureBoxSizeMode.Zoom;
-               // _enemies[i].BorderStyle = BorderStyle.None;
+                // _enemies[i].BorderStyle = BorderStyle.None;
                 _enemies[i].BorderStyle = BorderStyle.FixedSingle;
                 _enemies[i].Visible = false;
                 this.Controls.Add(_enemies[i]);
                 _enemies[i].Location = new Point((i + 1) * 50, -50);
-                
             }
 
 
@@ -95,7 +99,7 @@ namespace SpaceShooterv2
 
                 this.Controls.Add(_stars[i]);
             }
-            
+
             //enemy protectiles here
 
             _enemieProtectiles = new PictureBox[10];
@@ -204,7 +208,7 @@ namespace SpaceShooterv2
                 {
                     _protectiles[i].Visible = true;
                     _protectiles[i].Top -= _protectileSpeed;
-                    
+
                     CheckCollision();
                 }
                 else
@@ -229,11 +233,9 @@ namespace SpaceShooterv2
 
                 if (enemies[i].Location.Y == Player.Location.Y)
                 {
-                    this.BackColor=Color.Chartreuse;
+                    BackColor = Color.Chartreuse;
                 }
-            
             }
-
         }
 
         private void MoveEnemy_Elapsed(object sender, ElapsedEventArgs e)
@@ -258,13 +260,21 @@ namespace SpaceShooterv2
                     GameOver("Game Over");
                 }
             }
+
+            for (int i = 0; i < _enemieProtectiles.Length; i++)
+            {
+                if (Player.Bounds.IntersectsWith(_enemieProtectiles[i].Bounds))
+                {
+                    Player.Visible = false;
+                    GameOver("Game Over");
+                }
+            }
         }
 
         private void GameOver(string str)
         {
             MoveEnemy.Stop();
             MoveProtectile.Stop();
-            
         }
 
 
@@ -272,7 +282,7 @@ namespace SpaceShooterv2
         {
             for (int i = 0; i < _enemieProtectiles.Length; i++)
             {
-                if (_enemieProtectiles[i].Top < this.Height)
+                if (_enemieProtectiles[i].Top < Height)
                 {
                     _enemieProtectiles[i].Visible = true;
                     _enemieProtectiles[i].Top += _enemyProtectileSpeed;
@@ -282,7 +292,7 @@ namespace SpaceShooterv2
                     _enemieProtectiles[i].Visible = false;
                     int x = _random.Next(0, 10);
                     _enemieProtectiles[i].Location =
-                        new Point(_enemies[x].Location.X + 20, _enemies[x].Location.Y + 30);
+                        new Point(_enemies[x].Location.X, _enemies[x].Location.Y);
                 }
             }
         }
